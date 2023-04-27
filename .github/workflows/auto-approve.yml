@@ -18,6 +18,9 @@ jobs:
     # Currently there is no way to get the pull request number from the event payload in a workflow_run event.
     # We save it in the test workflow
     # These first steps extract it.
+    # More information about it:
+    # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#using-data-from-the-triggering-workflow
+    # https://securitylab.github.com/research/github-actions-preventing-pwn-requests/
     - name: 'Download artifact'
       uses: actions/github-script@v3.1.0
       with:
@@ -25,7 +28,7 @@ jobs:
           var artifacts = await github.actions.listWorkflowRunArtifacts({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              run_id: ${{github.event.workflow_run.id }},
+              run_id: context.payload.workflow_run.id,
           });
           var matchArtifact = artifacts.data.artifacts.filter((artifact) => {
             return artifact.name == "pr"
