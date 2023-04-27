@@ -25,20 +25,24 @@ jobs:
       uses: actions/github-script@v3.1.0
       with:
         script: |
+          console.log("Starting to list artifacts");
           var artifacts = await github.actions.listWorkflowRunArtifacts({
               owner: context.repo.owner,
               repo: context.repo.repo,
               run_id: context.payload.workflow_run.id,
           });
+          console.log("Filtering artifacts");
           var matchArtifact = artifacts.data.artifacts.filter((artifact) => {
             return artifact.name == "pr"
           })[0];
+          console.log("Downloading artifacts");
           var download = await github.actions.downloadArtifact({
               owner: context.repo.owner,
               repo: context.repo.repo,
               artifact_id: matchArtifact.id,
               archive_format: 'zip',
           });
+          console.log("Writing artifacts to disk");
           var fs = require('fs');
           fs.writeFileSync('${{github.workspace}}/pr.zip', Buffer.from(download.data));
     - run: unzip pr.zip
