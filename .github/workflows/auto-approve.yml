@@ -21,7 +21,7 @@ jobs:
     # More information about it:
     # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#using-data-from-the-triggering-workflow
     # https://securitylab.github.com/research/github-actions-preventing-pwn-requests/
-    - name: 'Download artifact'
+    - name: 'Download PR number'
       uses: actions/github-script@v3.1.0
       with:
         script: |
@@ -46,7 +46,7 @@ jobs:
           var fs = require('fs');
           fs.writeFileSync('${{github.workspace}}/pr.zip', Buffer.from(download.data));
     - run: unzip pr.zip
-    - name: Set the PR value
+    - name: Get the PR value and set it in the environment
       run: |
         echo "PR_NUMBER=$(<pr_number.txt)" >> "$GITHUB_ENV"
         echo "Set PR_NUMBER to $PR_NUMBER"
