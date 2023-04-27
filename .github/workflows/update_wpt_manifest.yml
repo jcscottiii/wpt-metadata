@@ -37,8 +37,10 @@ jobs:
   enable-auto-merge:
     runs-on: ubuntu-latest
     needs: update-wpt-manifest
+    # Need both permissions to enable auto merge.
     permissions:
       pull-requests: write
+      contents: write
     steps:
     # Could use https://github.com/peter-evans/enable-pull-request-automerge but it recommends using the CLI now
     # More about the CLI options. We need --auto so that the PR will automatically merge after:
