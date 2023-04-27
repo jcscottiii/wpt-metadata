@@ -7,20 +7,42 @@ on:
 
 jobs:
   approve:
-    name: "Approve PR ${{ github.event.workflow_run.pull_requests[0].number }}"
+    name: "Approve PR"
     runs-on: ubuntu-20.04
     if: >
       github.event.workflow_run.event == 'pull_request' &&
       github.event.workflow_run.conclusion == 'success'
     permissions:
       pull-requests: write
-    # strategy:
-    #   matrix:
-    #     # workflow_run contains list of pull requests
-    #     # https://docs.github.com/en/webhooks-and-events/webhooks/webhook-events-and-payloads?actionType=completed#workflow_run
-    #     # Extract the list of successful pull requests and run approvals on them.
-    #     pull_request: ${{ github.event.workflow_run.pull_requests }}
     steps:
+    # Currently there is no way to get the pull request number from the event payload in a workflow_run event.
+    # We save it in the test workflow
+    # These first steps extract it.
+    - name: 'Download artifact'
+      uses: actions/github-script@v3.1.0
+      with:
+        script: |
+          var artifacts = await github.actions.listWorkflowRunArtifacts({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: ${{github.event.workflow_run.id }},
+          });
+          var matchArtifact = artifacts.data.artifacts.filter((artifact) => {
+            return artifact.name == "pr"
+          })[0];
+          var download = await github.actions.downloadArtifact({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              artifact_id: matchArtifact.id,
+              archive_format: 'zip',
+          });
+          var fs = require('fs');
+          fs.writeFileSync('${{github.workspace}}/pr.zip', Buffer.from(download.data));
+    - run: unzip pr.zip
+    - name: Set the PR value
+      run: |
+        echo "PR_NUMBER=$(<pr_number.txt)" >> "$GITHUB_ENV"
+        echo "Set PR_NUMBER to $PR_NUMBER"
     - uses: hmarr/auto-approve-action@v3
       with:
-        pull-request-number: ${{ github.event.workflow_run.pull_requests[0].number }}
+        pull-request-number: ${{ env.PR_NUMBER }}
