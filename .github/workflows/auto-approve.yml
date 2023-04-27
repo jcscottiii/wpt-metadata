@@ -15,6 +15,8 @@ jobs:
     permissions:
       pull-requests: write
     steps:
+    - run: echo ${{ github.event.workflow_run.workflow }}
+    - run: echo ${{ github.event.workflow_run.workflow_run }}
     # Currently there is no way to get the pull request number from the event payload in a workflow_run event.
     # We save it in the test workflow
     # These first steps extract it.
