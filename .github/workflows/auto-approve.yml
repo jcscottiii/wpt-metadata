@@ -33,7 +33,7 @@ jobs:
           });
           console.log("Filtering artifacts");
           var matchArtifact = artifacts.data.artifacts.filter((artifact) => {
-            return artifact.name == "pr"
+            return artifact.name == "pr_number"
           })[0];
           console.log("Downloading artifacts");
           var download = await github.actions.downloadArtifact({
