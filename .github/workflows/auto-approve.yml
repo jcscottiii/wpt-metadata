@@ -18,8 +18,8 @@ jobs:
         # workflow_run contains list of pull requests
         # https://docs.github.com/en/webhooks-and-events/webhooks/webhook-events-and-payloads?actionType=completed#workflow_run
         # Extract the list of successful pull requests and run approvals on them.
-        pull_request: ${{ fromJson(toJson(github.event.workflow_run.pull_requests.*.number)) }}
+        pull_request: ${{ github.event.workflow_run.pull_requests }}
     steps:
     - uses: hmarr/auto-approve-action@v3
       with:
-        pull-request-number: ${{ matrix.pull_request }}
+        pull-request-number: ${{ matrix.pull_request.number }}
