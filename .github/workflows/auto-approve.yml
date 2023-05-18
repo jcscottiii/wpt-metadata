@@ -21,6 +21,9 @@ jobs:
     # More information about it:
     # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#using-data-from-the-triggering-workflow
     # https://securitylab.github.com/research/github-actions-preventing-pwn-requests/
+    # Current limitation:
+    # As of 2023-05-18, https://github.com/actions/download-artifact cannot download artifacts across workflows.
+    # As a result, have to use the script GitHub provides to download the artifact.
     - name: 'Download PR number'
       uses: actions/download-artifact@v3
       with:
